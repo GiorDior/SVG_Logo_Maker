@@ -19,6 +19,9 @@
 const inquirer = require("inquirer");
 const fs = require("fs");
 
+const Triangle = require("./lib/Triangle");
+const Circle = require("./lib/Circle");
+const Square = require("./lib/Square");
 //fs
 
 //Questions
@@ -31,17 +34,16 @@ const questions = [
   {
     type: "input",
     message: "Please enter text (3 characters max):",
-    name: "text",
+    name: "shapeName",
 
     //This does not work after one entry has been created
 
-    // validate: function (input) {
-    //   if (input.lenght <= 3) {
-    //     return true;
-    //   } else {
-    //     return "Please enter up to three characters.";
-    //   }
-    // },
+    validate: function (input) {
+      if (input.length <= 3) {
+        return true;
+      }
+      return "Please enter up to three characters.";
+    },
   },
 
   {
@@ -52,7 +54,7 @@ const questions = [
   {
     type: "list",
     message: "Please choose a shape:",
-    name: "shapes",
+    name: "shapeType",
     choices: ["Triangle", "Circle", "Square"],
   },
   {
@@ -65,9 +67,49 @@ const questions = [
 //Write functions for inputs
 function init() {
   inquirer.prompt(questions).then((response) => {
-    console.log(response);
+    let result = null;
+    //console.log(response);
+
+    switch (response.shapeType) {
+      case "Triangle":
+        result = new Triangle(
+          response.shapeName,
+          response.textColor,
+          response.shapeType,
+          response.shapeColor
+        );
+        break;
+
+      case "Circle":
+        result = new Circle(
+          response.shapeName,
+          response.textColor,
+          response.shapeType,
+          response.shapeColor
+        );
+        break;
+
+      case "Square":
+        result = new Square(
+          response.shapeName,
+          response.textColor,
+          response.shapeType,
+          response.shapeColor
+        );
+        break;
+
+      default:
+        return result;
+    }
+    console.log(result);
+    console.log(result.render());
+    const svg = result.render();
+    fs.writeFile(`./examples/logo.svg`, svg, () => {
+      console.log("Your file has been written.");
+    });
   });
 }
+
 //generateSVG() -> logo.svg
 //displaySVG() -> 300x200  pixel
 init();
